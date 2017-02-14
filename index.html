@@ -1,93 +1,120 @@
 <!DOCTYPE html>
 <html>
-  <head>
-	<title>Geolocation Introduction</title>
-	<meta charset="utf-8">
+<head>
+    <title>Geolocation Introduction</title>
+    <meta charset="utf-8">
 
     <script src="script.js"></script>
     <style>
-      #map {
-        height: 400px;
-        width: 100%;
-      }
+        #map {
+            height: 400px;
+            width: 100%;
+        }
     </style>
-  </head>
+</head>
 
-  <body>
-    <h1>My location is...</h1>
-    <p id="location"></p>
-    <div id="mapholder"></div>
-  <div id="map"></div>
-  </body>
-  <script>
+<body>
+<h1>My location is...</h1>
+
+<p id="location"></p>
+
+<div id="mapholder"></div>
+<div id="map"></div>
+<button id="show-listings">Show</button>
+<button id="hide-listings">Hide</button>
+</body>
+<script>
 
     var map;
     var markers = [];
 
     function initMap() {
-      var uluru = {lat: 42.497, lng: -87.846};
+        var uluru = {lat: 42.497, lng: -87.846};
 
-      map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 12,
-        center: uluru
-      });
-
-      var locations = [
-        {title: 'Pleasant Prairie Historical Society', location: {lat: 42.507442, lng: -87.852897}},
-        {title: 'Prairie Lane Elementary School', location: {lat: 42.519465, lng: -87.862587}}
-      ];
-
-      var largeInfoWindow = new google.maps.InfoWindow();
-      var bounds = new google.maps.LatLngBounds();
-
-      // use the location array to create an array of markers on initialize
-
-      for (var i = 0; i < locations.length; i++) {
-        var position = locations[i].location;
-        var title = locations[i].title;
-
-        var marker = new google.maps.Marker({
-          map: map,
-          position: position,
-          title: title,
-          animation: google.maps.Animation.DROP,
-          id: i
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 12,
+            center: uluru
         });
 
-        markers.push(marker);
+        var locations = [
+            {title: 'Pleasant Prairie Historical Society', location: {lat: 42.507442, lng: -87.852897}},
+            {title: 'Prairie Lane Elementary School', location: {lat: 42.519465, lng: -87.862587}}
+        ];
 
-        bounds.extend(marker.position);
+        var largeInfoWindow = new google.maps.InfoWindow();
+        var bounds = new google.maps.LatLngBounds();
 
-        marker.addListener('click', function () {
-          populateInfoWindow(this, largeInfoWindow);
-        });
+        // use the location array to create an array of markers on initialize
+
+        for (var i = 0; i < locations.length; i++) {
+            var position = locations[i].location;
+            var title = locations[i].title;
+
+            var marker = new google.maps.Marker({
+                //map: map,
+                position: position,
+                title: title,
+                animation: google.maps.Animation.DROP,
+                id: i
+            });
+
+            markers.push(marker);
+
+            //bounds.extend(marker.position);
+
+            marker.addListener('click', function () {
+                populateInfoWindow(this, largeInfoWindow);
+            });
 
 
-      }
+        }
 
-      map.fitBounds(bounds);
+        //map.fitBounds(bounds);
+
+        document.getElementById('show-listings').addEventListener('click', showListings);
+        document.getElementById('hide-listings').addEventListener('click', hideListings);
     }
 
-      function populateInfoWindow(marker, infowindow) {
+
+    function showListings() {
+        var bounds = new google.maps.LatLngBounds();
+        for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(map);
+            bounds.extend(markers[i].position);
+        }
+        map.fitBounds(bounds);
+    }
+
+    function hideListings() {
+        for (var i = 0; i < markers.length; i++) {
+
+            // This will hide the markers, not delete them
+            markers[i].setMap(null);
+
+        }
+    }
+
+
+    function populateInfoWindow(marker, infowindow) {
         // Check to make sure the info window is not already opened on this marker
         if (infowindow.marker != marker) {
-          infowindow.marker = marker;
-          infowindow.setContent('<div>' + marker.title + '</div>');
-          infowindow.open(map, marker);
-          // make sure the marker property is cleared if the infowindow is closed
-          infowindow.addListener('closeclick', function() {
-            //infoWindow.setMap(null);
-            infowindow.setMarker = null;
-            infowindow.marker = null;
-          })
+            infowindow.marker = marker;
+            infowindow.setContent('<div>' + marker.title + '</div>');
+            infowindow.open(map, marker);
+            // make sure the marker property is cleared if the infowindow is closed
+            infowindow.addListener('closeclick', function () {
+                //infoWindow.setMap(null);
+                infowindow.setMarker = null;
+                infowindow.marker = null;
+            })
         }
-      }
+    }
 
 
-  </script>
-  <script async defer
-          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBwPVLHkMHn3e7BX0MzQHLki_efPdTX35c&v=3&callback=initMap">
-  </script>
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBwPVLHkMHn3e7BX0MzQHLki_efPdTX35c&v=3&callback=initMap">
+</script>
 </html>
 
 
