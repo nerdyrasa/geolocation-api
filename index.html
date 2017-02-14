@@ -5,14 +5,122 @@
 	<meta charset="utf-8">
 
     <script src="script.js"></script>
-	<style>
-		/* style goes here */
-	</style>
+    <style>
+      #map {
+        height: 400px;
+        width: 100%;
+      }
+    </style>
   </head>
 
   <body>
     <h1>My location is...</h1>
     <p id="location"></p>
+    <div id="mapholder"></div>
+  <div id="map"></div>
   </body>
+  <script>
 
+    var map;
+    var markers = [];
+
+    function initMap() {
+      var uluru = {lat: 42.497, lng: -87.846};
+
+      map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 12,
+        center: uluru
+      });
+
+      var locations = [
+        {title: 'Pleasant Prairie Historical Society', location: {lat: 42.507442, lng: -87.852897}},
+        {title: 'Prairie Lane Elementary School', location: {lat: 42.519465, lng: -87.862587}}
+      ];
+
+      var largeInfoWindow = new google.maps.InfoWindow();
+      var bounds = new google.maps.LatLngBounds();
+
+      // use the location array to create an array of markers on initialize
+
+      for (var i = 0; i < locations.length; i++) {
+        var position = locations[i].location;
+        var title = locations[i].title;
+
+        var marker = new google.maps.Marker({
+          map: map,
+          position: position,
+          title: title,
+          animation: google.maps.Animation.DROP,
+          id: i
+        });
+
+        markers.push(marker);
+
+        bounds.extend(marker.position);
+
+        marker.addListener('click', function () {
+          populateInfoWindow(this, largeInfoWindow);
+        });
+
+
+      }
+
+      map.fitBounds(bounds);
+    }
+
+      function populateInfoWindow(marker, infowindow) {
+        // Check to make sure the info window is not already opened on this marker
+        if (infowindow.marker != marker) {
+          infowindow.marker = marker;
+          infowindow.setContent('<div>' + marker.title + '</div>');
+          infowindow.open(map, marker);
+          // make sure the marker property is cleared if the infowindow is closed
+          infowindow.addListener('closeclick', function() {
+            //infoWindow.setMap(null);
+            infowindow.setMarker = null;
+            infowindow.marker = null;
+          })
+        }
+      }
+
+
+  </script>
+  <script async defer
+          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBwPVLHkMHn3e7BX0MzQHLki_efPdTX35c&v=3&callback=initMap">
+  </script>
 </html>
+
+
+<!--
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #map {
+      height: 400px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+<h3>My Google Maps Demo</h3>
+<div id="map"></div>
+<script>
+  function initMap() {
+    var uluru = {lat: -25.363, lng: 131.044};
+    var map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 4,
+      center: uluru
+    });
+    var marker = new google.maps.Marker({
+      position: uluru,
+      map: map
+    });
+  }
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap">
+</script>
+</body>
+</html>
+-->
